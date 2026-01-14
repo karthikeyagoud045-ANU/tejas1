@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6"/>
+      <stop offset="100%" style="stop-color:#8B5CF6"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="512" height="512" rx="96" fill="url(#grad)"/>
+  <!-- Heart with pulse -->
+  <g fill="white" transform="translate(256, 256)">
+    <!-- Heart shape -->
+    <path d="M0-80 C-40-120 -100-80 -100-30 C-100 30 0 100 0 100 C0 100 100 30 100-30 C100-80 40-120 0-80" 
+          transform="scale(1.3)" opacity="0.95"/>
+    <!-- AI circuit lines -->
+    <circle cx="-60" cy="-20" r="8" fill="#3B82F6"/>
+    <circle cx="60" cy="-20" r="8" fill="#3B82F6"/>
+    <circle cx="0" cy="40" r="8" fill="#3B82F6"/>
+    <line x1="-60" y1="-20" x2="0" y2="40" stroke="#3B82F6" stroke-width="3"/>
+    <line x1="60" y1="-20" x2="0" y2="40" stroke="#3B82F6" stroke-width="3"/>
+    <line x1="-60" y1="-20" x2="60" y2="-20" stroke="#3B82F6" stroke-width="3"/>
+  </g>
+</svg>

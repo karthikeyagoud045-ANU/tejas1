@@ -1,0 +1,7 @@
+{
+  "name": "HealthWise.AI",
+  "description": "AI-powered medical report analysis and personalized health dashboard.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

@@ -1,0 +1,112 @@
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { User, Session } from '@supabase/supabase-js';
+import { supabase } from '../services/supabaseClient';
+
+interface AuthContextType {
+    user: User | null;
+    session: Session | null;
+    loading: boolean;
+    signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+    signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
+    signOut: () => Promise<void>;
+    signInWithGoogle: () => Promise<{ error: Error | null }>;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (context === undefined) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
+};
+
+interface AuthProviderProps {
+    children: ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+    const [user, setUser] = useState<User | null>(null);
+    const [session, setSession] = useState<Session | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        // Get initial session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setSession(session);
+            setUser(session?.user ?? null);
+            setLoading(false);
+        });
+
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+            async (event, session) => {
+                console.log('Auth event:', event);
+
+                // Update state - React's state management handles the UI update
+                setSession(session);
+                setUser(session?.user ?? null);
+                setLoading(false);
+
+                // Clear any stale reload flags on sign out
+                if (event === 'SIGNED_OUT') {
+                    sessionStorage.removeItem('auth_reload_done');
+                }
+            }
+        );
+
+        return () => subscription.unsubscribe();
+    }, []);
+
+    const signIn = async (email: string, password: string) => {
+        const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
+        return { error: error as Error | null };
+    };
+
+    const signUp = async (email: string, password: string) => {
+        const { error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                emailRedirectTo: window.location.origin
+            }
+        });
+        return { error: error as Error | null };
+    };
+
+    const signOut = async () => {
+        await supabase.auth.signOut();
+    };
+
+    const signInWithGoogle = async () => {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: window.location.origin
+            }
+        });
+        return { error: error as Error | null };
+    };
+
+    const value = {
+        user,
+        session,
+        loading,
+        signIn,
+        signUp,
+        signOut,
+        signInWithGoogle
+    };
+
+    return (
+        <AuthContext.Provider value={value}>
+            {children}
+        </AuthContext.Provider>
+    );
+};
+
+export default AuthContext;
