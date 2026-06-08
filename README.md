@@ -210,7 +210,3 @@ When one API key fails, the system automatically rotates to the next. See `docs/
 | Backend | Railway | `backend/Procfile` + `railway.toml` |
 
 ---
-
-## 📝 License
-
-MIT License
